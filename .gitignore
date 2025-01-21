@@ -1,0 +1,55 @@
+# Ignore the .env file
+.env
+
+# Ignore the .env folder (if it exists and is used for a virtual environment)
+.env/
+
+# Ignore node_modules directory
+node_modules/
+
+# Ignore build output directories
+dist/
+build/
+
+# Ignore macOS-specific file
+.DS_Store
+
+# Ignore log files
+*.log
+
+# Ignore virtual environment directory
+env/
+
+# Ignore Python cache files
+__pycache__/
+*.py[cod]
+
+# Ignore IDE specific files
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# Ignore coverage reports
+coverage/
+*.cover
+*.coverage
+*.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.coveragerc
+
+# Ignore temporary files
+*.tmp
+*.swp
+*.bak
+*.pid
+*.seed
+*.backup
+
+# Ignore compiled files
+*.o
+*.so
+*.exe
+*.dll
