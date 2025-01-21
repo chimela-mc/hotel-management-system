@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* * {
+  @apply border border-solid border-black;
+} */
+
+.h1 {
+  @apply text-[54px] lg:text-[64px] uppercase tracking-[2px] leading-tight;
+}
+
+.h2 {
+  @apply text-[50px];
+}
+
+.h3 {
+  @apply text-[26px];
+}
