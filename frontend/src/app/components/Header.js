@@ -44,6 +44,8 @@ const Header = () => {
     checkAuthentication();
   }, []); // Empty dependency array so it only runs once when the component mounts
 
+  console.log('isUserAuthenticated:', isUserAuthenticated);
+
   return (
     <header className="py-6 shadow-md ">
       <div className="container mx-auto">
