@@ -11,7 +11,7 @@ const Dropdown = ({ user }) => {
   const handleLogout = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://127.0.0.1:8000/api/logout/', {
+      const response = await fetch('http://127.0.0.1:8000/logout/', {
         method: 'POST',
         credentials: 'include',  // Send cookies
       });
