@@ -5,42 +5,28 @@ import Link from 'next/link';
 import { FaCalendarCheck, FaHome, FaSignOutAlt } from 'react-icons/fa';
 import Router from 'next/router';
 
-const Dropdown = ({ user }) => {
+const Dropdown = ({ user, handleLogout }) => {
   const [loading, setLoading] = useState(false);
 
-  const handleLogout = async () => {
-    try {
-      setLoading(true);
-      const response = await fetch('http://127.0.0.1:8000/logout/', {
-        method: 'POST',
-        credentials: 'include',  // Send cookies
-      });
-
-      if (response.ok) {
-        Router.push('/login');  // Redirect to login page
-      } else {
-        console.error('Logout failed');
-        throw new Error('Logout failed');
-      }
-    } catch (error) {
-      console.error('Error during logout:', error);
-      Router.push('/login');
-    } finally {
-      setLoading(false);
-    }
+  const handleLogoutClick = async () => {
+    setLoading(true);
+    await handleLogout();
+    setLoading(false);
   };
+
 
   return (
     <div>{/* dropdown menu */} 
       <div>{/* dropdown trigger */}
         <div className="flex items-center gap-2 cursor-pointer">
           <div>{/* avatar */}
-            {<Image 
-              src={user.picture} /> || 
-              <div className='bg-accent text-white font-bold rounded-full w-12 h-12 flex items-center justify-center'>
-                {`${user.f_name[0]}${user.l_name[0]}`}
-              </div>
-              }
+            {user.picture ? (
+                <Image src={user.picture} alt="User Avatar" width={48} height={48} className='rounded-full' />
+              ) : (
+                <div className='bg-accent text-white font-bold rounded-full w-12 h-12 flex items-center justify-center'>
+                  {`${user.f_name[0]}${user.l_name[0]}`}
+                </div>
+              )}
           </div>
           <div>{/* name and email */}
             <div>
