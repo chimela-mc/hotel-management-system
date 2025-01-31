@@ -24,23 +24,23 @@ CustomerUser = get_user_model()
 @api_view(["GET"])
 def endpoint(request):
     data = {
-        'localhost/' : 'List of Endpoint',
-        'logout' : 'Logout User',
-        'dashboard' : 'User Dashboard',
-        'user-profile' : 'User Profile',
-        'check-authentication' : 'Check User Authentication',
-        'api/check-sessions' : 'Check User Authentication',
-        'register' : 'Register User',
-        'api/token' : 'Login User',
-        'api/refresh' : 'Refresh User Token',
-        'rooms/' : 'To create and get new rooms',
-        'rooms/id/' : 'To update, get, and delete a room',
-        'bookings/' : 'To create and get new bookings',
-        'bookings/id/' : 'To update, get, and delete bookings',
-        'services/' : 'To create and get new services',
-        'services/<int:pk>/' : 'To update, get, and delete services',
-        'rooms/id/reviews/' : 'To create and get new reviews',
-        'rooms/id/reviews/id/' : 'To update, get, and delete reviews',
+        '/localhost/' : 'List of Endpoint',
+        '/logout' : 'Logout User',
+        '/dashboard' : 'User Dashboard',
+        '/user-profile' : 'User Profile',
+        '/api/check-authentication' : 'Check User Authentication',
+        '/api/check-sessions' : 'Check Active Sessions',
+        '/register' : 'Register User',
+        '/api/token' : 'Login User',
+        '/api/token/refresh/' : 'Refresh User Token',
+        '/rooms/' : 'To create and get new rooms',
+        '/rooms/id/' : 'To update, get, and delete a room',
+        '/bookings/' : 'To create and get new bookings',
+        '/bookings/id/' : 'To update, get, and delete bookings',
+        '/services/' : 'To create and get new services',
+        '/services/<int:pk>/' : 'To update, get, and delete services',
+        '/rooms/id/reviews/' : 'To create and get new reviews',
+        '/rooms/id/reviews/id/' : 'To update, get, and delete reviews',
     }
 
     return Response(data)
@@ -50,7 +50,8 @@ def endpoint(request):
 def check_authentication(request):
     return Response({'isAuthenticated': True})
 
-@login_required
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def check_sessions(request):
     # user = request.user
     sessions = Session.objects.filter(expire_date__gte=timezone.now())
