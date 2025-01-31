@@ -9,6 +9,7 @@ urlpatterns = [
     path('', endpoint, name='api-overview'),
     path('user-profile/', user_profile, name='user-profile'),
     path('api/check-authentication/', check_authentication, name='check-authentication'),
+    path('api/check-sessions/', check_sessions, name='check_sessions'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('logout/', LogoutView.as_view(), name='logout'),
     path('rooms/', ListCreateRoom.as_view(), name='room-list-create'),

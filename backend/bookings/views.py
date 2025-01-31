@@ -5,34 +5,42 @@ from rest_framework.views import APIView
 from .models import *
 from .serializers import *
 from rest_framework.decorators import api_view, permission_classes
-from django.contrib.auth import authenticate
+from django.contrib.auth import authenticate, get_user_model
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated,  AllowAny
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.middleware.csrf import get_token
+from django.contrib.sessions.models import Session
+from django.contrib.auth.models import User
+from django.http import JsonResponse
+from django.contrib.auth.decorators import login_required
+from django.utils import timezone
 # Create your views here.
+
+CustomerUser = get_user_model()
 
 @api_view(["GET"])
 def endpoint(request):
     data = {
-        'localhost/' : 'List of Endpoint',
-        'logout' : 'Logout User',
-        'dashboard' : 'User Dashboard',
-        'user-profile' : 'User Profile',
-        'check-authentication' : 'Check User Authentication',
-        'register' : 'Register User',
-        'api/token' : 'Login User',
-        'api/refresh' : 'Refresh User Token',
-        'rooms/' : 'To create and get new rooms',
-        'rooms/id/' : 'To update, get, and delete a room',
-        'bookings/' : 'To create and get new bookings',
-        'bookings/id/' : 'To update, get, and delete bookings',
-        'services/' : 'To create and get new services',
-        'services/<int:pk>/' : 'To update, get, and delete services',
-        'rooms/id/reviews/' : 'To create and get new reviews',
-        'rooms/id/reviews/id/' : 'To update, get, and delete reviews',
+        '/localhost/' : 'List of Endpoint',
+        '/logout' : 'Logout User',
+        '/dashboard' : 'User Dashboard',
+        '/user-profile' : 'User Profile',
+        '/api/check-authentication' : 'Check User Authentication',
+        '/api/check-sessions' : 'Check Active Sessions',
+        '/register' : 'Register User',
+        '/api/token' : 'Login User',
+        '/api/token/refresh/' : 'Refresh User Token',
+        '/rooms/' : 'To create and get new rooms',
+        '/rooms/id/' : 'To update, get, and delete a room',
+        '/bookings/' : 'To create and get new bookings',
+        '/bookings/id/' : 'To update, get, and delete bookings',
+        '/services/' : 'To create and get new services',
+        '/services/<int:pk>/' : 'To update, get, and delete services',
+        '/rooms/id/reviews/' : 'To create and get new reviews',
+        '/rooms/id/reviews/id/' : 'To update, get, and delete reviews',
     }
 
     return Response(data)
@@ -41,6 +49,28 @@ def endpoint(request):
 @permission_classes([IsAuthenticated])
 def check_authentication(request):
     return Response({'isAuthenticated': True})
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def check_sessions(request):
+    # user = request.user
+    sessions = Session.objects.filter(expire_date__gte=timezone.now())
+    all_sessions = []
+
+    for session in sessions:
+        session_data = session.get_decoded()
+        user_id = session_data.get('_auth_user_id')
+        if user_id:
+            user = CustomerUser.objects.get(id=user_id)
+            all_sessions.append({
+                'session_key': session.session_key,
+                'user_id': user.id,
+                "username": user.username,
+                "email": user.email,
+                "last.login": user.last_login
+            })
+
+    return JsonResponse({'active_sessions': all_sessions})
 
 @api_view(["GET"])  # This allows only GET requests
 @permission_classes([IsAuthenticated])  # Only authenticated users can access this
@@ -161,7 +191,7 @@ class DashboardView(generics.ListAPIView):
 
 class RegisterView(generics.CreateAPIView):
     permission_classes = [AllowAny]
-    queryset = User.objects.all()
+    queryset = CustomerUser.objects.all()
     serializer_class = UserSerializer
 
     def create(self, request, *args, **kwargs):

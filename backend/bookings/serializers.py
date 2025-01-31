@@ -7,7 +7,7 @@ import logging
 from django.contrib.auth import get_user_model
 
 logger = logging.getLogger(__name__)
-User = get_user_model()
+CustomerUser = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, validators=[validate_password])
@@ -42,7 +42,7 @@ class UserSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({"password": "Passwords do not match."})
         
     # Check if the email is already registered
-        if User.objects.filter(email=email).exists():
+        if CustomerUser.objects.filter(email=email).exists():
             raise serializers.ValidationError({"email": "Email is already in use."})
 
         try:
@@ -66,7 +66,7 @@ class UserSerializer(serializers.ModelSerializer):
         
         # Create the user using the custom manager's create_user method
         try:
-            user = User.objects.create_user(
+            user = CustomerUser.objects.create_user(
                 email=validated_data['email'],
                 password=validated_data['password']
             )

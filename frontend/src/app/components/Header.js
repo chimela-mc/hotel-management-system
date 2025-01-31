@@ -17,7 +17,8 @@ const socials = [
 
 const Header = () => {
   const [isUserAuthenticated, setIsUserAuthenticated] = useState(false)
-
+  const [user, setUser] = useState(null);
+  const [activeSessions, setActiveSessions] = useState([]);
 
   useEffect(() => {
     const checkAuthentication = async () => {
@@ -31,6 +32,7 @@ const Header = () => {
         if (response.ok) {
           const data = await response.json();
           setIsUserAuthenticated(data.isAuthenticated);
+          setUser(data.user);
         } else {
           console.log('Response not OK');
           setIsUserAuthenticated(false);
@@ -41,11 +43,51 @@ const Header = () => {
       }
     };
 
+    const checkSessions = async () => {
+      try {
+        const response = await fetch('http://127.0.0.1:8000/api/check-sessions/', {
+          method: 'GET',
+          credentials: 'include', // Ensure cookies are sent with the request
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setActiveSessions(data.active_sessions);
+          console.log('Active Sessions:', data.active_sessions); // Log active sessions to the console
+        } else {
+          console.error('Failed to check sessions');
+        }
+      } catch (error) {
+        console.error('Error checking sessions:', error);
+      }
+    };
+
     checkAuthentication();
+    checkSessions();
   }, []); // Empty dependency array so it only runs once when the component mounts
 
-  console.log('isUserAuthenticated:', isUserAuthenticated);
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:8000/api/logout/', {
+        method: 'POST',
+        credentials: 'include', // Ensure cookies are sent with the request
+      });
 
+      if (response.ok) {
+        Router.push('/login');
+        setIsUserAuthenticated(false);
+        setUser(null);
+      }else {
+        console.error('Logout failed');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+      alert('An error occurred. Please try again.');
+    }
+  };
+
+  console.log('isUserAuthenticated:', isUserAuthenticated);
+  console.log('activeSessions:', activeSessions, 'isUserAuthenticated:', isUserAuthenticated);
   return (
     <header className="py-6 shadow-md ">
       <div className="container mx-auto">
@@ -78,7 +120,7 @@ const Header = () => {
           <div className='flex items-center justify-center gap-8 xl:w-max'>
             <div className='flex items-center gap-2 xl:order-2'>
               {isUserAuthenticated ? (
-                <Dropdown user={user}/>
+                <Dropdown user={user} handleLogout={handleLogout}/>
               ) : (
                 <div className="flex gap-2">
                     <Link href='/login'>
